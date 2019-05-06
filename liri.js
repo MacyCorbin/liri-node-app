@@ -32,5 +32,51 @@ var fs = require("fs")
 // Date and times
 var moment = require("moment")
 
-var action = process.argv[2];
-var searchTopic = process.argv[3]
+var input = process.argv;
+var action = input[2];
+
+var name = "";
+
+for (var i =3; i< input.length; i++){
+    if (i> 3 && i < input[i]){
+        name = name + "+" + input[i];
+    }else{
+        name += input[i];
+    }
+}
+
+function switchCase(){
+
+    switch(action){
+
+        case 'concert-this':
+        bandsInTown(name);
+        break;
+
+        case 'spotify-this-song':
+        spotifySong(name);
+        break;
+
+        case 'movie-this':
+        movieData(name);
+        break;
+
+        case 'do-what-it-says':
+        randomText();
+        break;
+
+        default:
+        console.log("Input was invalid, please re-enter.")
+    }
+}
+
+// function bandsInTown(){}
+
+// function spotifySong(){}
+
+// function movieData(){}
+
+// function randomText(){}
+
+
+
