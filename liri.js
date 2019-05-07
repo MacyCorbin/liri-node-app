@@ -15,10 +15,10 @@ var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
 
 // Core node package for reading and writing files
-var fs = require("fs")
+var fs = require("fs");
 
 // Date and times
-var moment = require("moment")
+var moment = require("moment");
 
 var action = process.argv[2];
 var actionTopic =  process.argv.slice(3).join(" ");
@@ -93,17 +93,45 @@ function spotifySong(actionTopic){
     });
 }
     
+function movieData(actionTopic){
+    if(!actionTopic){
+        actionTopic = "Mr. Nobody";
+    }
 
+    axios.get("https://www.omdbapi.com/?t="
+    + actionTopic
+    + "&y=&plot=short&apikey=trilogy")
 
+    .then(function(response) {
+       
+        var movieResults = 
+            divider
+            + "\nMovie Title: " + response.data.Title
+            + "\nYear Released: " + response.data.Year
+            + "\nIMDB Rating: " + response.data.imdbRating
+            + "\nRotten Tomatoes Rating: " + response.data.Ratings[1].Value
+            + "\nCountry Produced: " + response.data.Country
+            + "\nLanguage: " + response.data.Language
+            + "\nPlot: " + response.data.Plot
+            + "\nActors and Actresses: " + response.data.Actors;
+            console.log(movieResults);
+    })
+       
+    .catch(function (error) {
+        console.log(error);
+    });
+}
 
+function randomText() {
+    fs.readFile("random.txt", "utf8", function(error,data){
+        if(error){
+            return console.log(error);
+        }
+        var dataArray = data.split(',');
 
-// function movieData(){}
-
-// function do-what-it-says(){}
-
-
-
-
-
-
-
+        if (dataArray[0] === "spotify-this-song") {
+        var songCheck = dataArray[1].trim().slice(1, -1);
+        spotifySong(songCheck);
+        }
+    })
+}
