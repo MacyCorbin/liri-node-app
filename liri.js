@@ -1,15 +1,3 @@
-// Navigate to the root of your project and run `npm init -y` &mdash; this will initialize a `package.json` file for your project. 
-// The `package.json` file is required for installing third party npm packages and saving their version numbers.
-// If you fail to initialize a `package.json` file, it will be troublesome, and at times almost impossible for anyone else to run your code after cloning your project.
-
-// liri.js can take the following commands:
-// 1.  `concert-this`
-// 2.  `spotify-this-song`
-// 3.  `movie-this`
-// 4.  `do-what-it-says`
-
-
-
 require("dotenv").config();
 
 //imports the keys.js file and store it in a variable
@@ -32,51 +20,90 @@ var fs = require("fs")
 // Date and times
 var moment = require("moment")
 
-var input = process.argv;
-var action = input[2];
+var action = process.argv[2];
+var actionTopic =  process.argv.slice(3).join(" ");
 
-var name = "";
+var divider = "\n🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹 🔹\n";
 
-for (var i =3; i< input.length; i++){
-    if (i> 3 && i < input[i]){
-        name = name + "+" + input[i];
-    }else{
-        name += input[i];
-    }
-}
-
-function switchCase(){
 
     switch(action){
 
-        case 'concert-this':
-        bandsInTown(name);
+        case 'concert-this': //Terminal input: node liri.js concert-this "insert artist"
+        bandsInTown(actionTopic);
         break;
 
-        case 'spotify-this-song':
-        spotifySong(name);
+        case 'spotify-this-song': //Terminal input: node liri.js spotify-this-song "song name and/or artist"
+        spotifySong(actionTopic);
         break;
 
-        case 'movie-this':
-        movieData(name);
+        case 'movie-this': //Terminal input: node liri.js movie-this "movie title"
+        movieData(actionTopic);
         break;
 
-        case 'do-what-it-says':
+        case 'do-what-it-says': //Terminal input: node liri.js do-what-it-says
         randomText();
         break;
 
         default:
         console.log("Input was invalid, please re-enter.")
     }
+
+
+function bandsInTown(actionTopic){
+
+    axios.get("https://rest.bandsintown.com/artists/"
+    + actionTopic
+    + "/events?app_id=codingbootcamp")
+    .then(function(response) {
+        for (var i = 0; i< response.data.length; i++){
+
+            var bandResults = 
+            divider
+            + "\nVenue Name: " + response.data[i].venue.name
+            + "\nVenue Location: " + response.data[i].venue.city
+            + "\nEvent date: " + moment(response.data[i].datetime).format('LL');
+            console.log(bandResults);
+        }})
+        .catch(function (error) {
+            console.log(error);
+        });
+    
 }
 
-// function bandsInTown(){}
+function spotifySong(actionTopic){
+    if(!actionTopic){
+        actionTopic = "The Sign Ace of Base";
+    }
+    spotify
+    .search({ type: 'track', query: actionTopic })
+    .then(function(response) {
+        for (var i = 0; i < 5; i++) {
+            var spotifyResults = 
+                divider
+                + "\nArtist(s): " + response.tracks.items[i].artists[0].name
+                + "\nSong Title: " + response.tracks.items[i].name
+                + "\nAlbum Title: " + response.tracks.items[i].album.name
+                + "\nPreview Link: " + response.tracks.items[i].preview_url;
+                    
+            console.log(spotifyResults);
+        }
+    })
+    .catch(function(err) {
+        console.log(err);
+    });
+}
+    
 
-// function spotifySong(){}
+
+
 
 // function movieData(){}
 
-// function randomText(){}
+// function do-what-it-says(){}
+
+
+
+
 
 
 
